@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+import sys
 
 # Title and introduction
 st.title("Pitsy Automation vs. Contract Manufacturers Cost Comparison")
@@ -10,16 +12,29 @@ st.write("This scatter plot demonstrates the cost-effectiveness of Pitsy Automat
 units_produced = [1000, 5000, 10000, 20000, 50000]
 pitsy_costs = [2.00, 1.90, 1.80, 1.70, 1.60]
 gar_labs_costs = [2.50, 2.20, 1.95, 1.90, 1.85]
-botanical_gardens_costs = [3.20, 3.00, 2.85, 2.75, 2.65]
 goodkind_co_costs = [3.50, 3.30, 3.10, 3.00, 2.90]
+
+# Ensure units_produced is a list of integers
+units_produced = [int(unit) for unit in units_produced]
+
+# Streamlit slider
+num_units = st.slider("Number of Units", min_value=min(units_produced), max_value=max(units_produced), value=int(units_produced[0]), step=int(units_produced[1] - units_produced[0]))
+
+# Interpolate costs for the selected number of units
+pitsy_cost = np.interp(num_units, units_produced, pitsy_costs)
+gar_labs_cost = np.interp(num_units, units_produced, gar_labs_costs)
+goodkind_co_cost = np.interp(num_units, units_produced, goodkind_co_costs)
 
 # Scatter plot
 fig, ax = plt.subplots()
 
 ax.scatter(units_produced, pitsy_costs, label='Pitsy Automation', marker='o')
 ax.scatter(units_produced, gar_labs_costs, label='Gar Labs', marker='o')
-ax.scatter(units_produced, botanical_gardens_costs, label='Botanical Gardens', marker='o')
 ax.scatter(units_produced, goodkind_co_costs, label='Goodkind Co', marker='o')
+
+ax.plot(num_units, pitsy_cost, marker='X', markersize=10, linestyle='', color='blue', label=f"Pitsy {num_units} units")
+ax.plot(num_units, gar_labs_cost, marker='X', markersize=10, linestyle='', color='orange', label=f"Gar Labs {num_units} units")
+ax.plot(num_units, goodkind_co_cost, marker='X', markersize=10, linestyle='', color='green', label=f"Goodkind Co {num_units} units")
 
 ax.set_xlabel('Units Produced')
 ax.set_ylabel('Cost per Unit')
@@ -27,14 +42,6 @@ ax.set_title('Pitsy Automation vs. Contract Manufacturers Cost Comparison')
 ax.legend()
 
 st.pyplot(fig)
-
-import sys
-st.write(f"Python version: {sys.version}")
-
-import streamlit as st 
-import millify
-import pandas as pd
-import numpy as np
 
 st.title("AI Manufacturing Assistant")
 
@@ -149,15 +156,7 @@ st.write("Cost per Unit Matrix:")
 st.table(matrix_df)
 
 # Create a narrative
-st.write("""
-As the number of units produced increases, Pitsy Automation becomes more cost-effective compared to other contract manufacturers like Gar Labs and goodkind co. 
-
-For example, at 1,000 units, Pitsy Automation has a cost per unit of $2.00, while Gar Labs and goodkind co have costs per unit of $2.50 and $3.20, respectively. 
-
-As production scales up to 50,000 units, Pitsy Automation's cost per unit decreases to $1.60, while Gar Labs' and goodkind co' costs per unit only decrease to $1.85 and $2.65, respectively. 
-
-This demonstrates the cost-effectiveness of Pitsy Automation at scale compared to other contract manufacturers.
-""")
+st.write('As the number of units produced increases, Pitsy Automation becomes more cost-effective compared to other contract manufacturers like Gar Labs and goodkind co. For example, at 1,000 units, Pitsy Automation has a cost per unit of $2.00, while Gar Labs and goodkind co have costs per unit of $2.50 and $3.20, respectively. As production scales up to 50,000 units, Pitsy Automation\'s cost per unit decreases to $1.60, while Gar Labs\' and goodkind co\' costs per unit only decrease to $1.85 and $2.65, respectively. This demonstrates the cost-effectiveness of Pitsy Automation at scale compared to other contract manufacturers.')
 
 import streamlit as st
 import pandas as pd
